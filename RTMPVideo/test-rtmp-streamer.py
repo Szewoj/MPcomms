@@ -2,7 +2,7 @@ import cv2
 import ffmpeg
 
 
-RTMP_PATH = 'rtmp://192.168.0.224:1935/live/test'
+RTMP_PATH = 'rtmp://192.168.0.224:1935/live/rgb'
 
 if __name__ == "__main__":
 

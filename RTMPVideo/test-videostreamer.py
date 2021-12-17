@@ -7,7 +7,7 @@ if __name__ == "__main__":
 
     cap = cv2.VideoCapture(0)
 
-    streamer = VS.VideoStreamer('rgb')
+    streamer = VS.VideoStreamer('rgb.flv')
 
     streamer.run()
 

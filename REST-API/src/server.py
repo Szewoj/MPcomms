@@ -64,3 +64,14 @@ class Mode(Resource):
 
 if __name__ == '__main__':
     restAP.run()
+
+
+# TODO 
+
+# (put) EmergencyTask access point
+# (post) Add station access point
+# (post) Start transmition
+# (post) End transmition
+
+
+

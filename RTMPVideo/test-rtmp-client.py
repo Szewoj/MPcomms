@@ -1,6 +1,6 @@
 import cv2
 
-myrtmp_addr = 'rtmp://192.168.1.18:1935/live/rgb'
+myrtmp_addr = 'rtmp://192.168.0.224:1935/live/rgb'
 
 cap = cv2.VideoCapture(myrtmp_addr)
 

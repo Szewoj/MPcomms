@@ -9,7 +9,7 @@ class VideoStreamer:
             ffmpeg
             .input('pipe:', r='6')
             .output(self.rtmpAddr,vcodec='libx264', pix_fmt='yuv420p', preset='ultrafast', tune='zerolatency',
-            r='20', g='50', video_bitrate='1.4M', maxrate='1.5M', bufsize='0M', segment_time='6',
+            r='30', g='50', video_bitrate='1.4M', maxrate='4M', bufsize='0M', segment_time='6',
             format='flv')
         )
 
