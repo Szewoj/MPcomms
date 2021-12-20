@@ -1,6 +1,7 @@
 from flask import Flask
 from flask_restx import Resource, Api, fields
-from enumerators import Modes, modeSwitch, EmergencyActions, emergencyActionsSwitch
+from enumerators import Modes, modeSwitch,\
+                        EmergencyActions, emergencyActionsSwitch
 import SynchronizedData as SD
 
 # --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
@@ -15,7 +16,7 @@ class AccessPoint(object):
         self._emergencyAction = SD.EmergencyAction()
 
     def run(self):
-        self.app.run(debug=True)
+        self.app.run(debug=True, use_reloader=False)
 
     # --- Mode ---
     def getMode(self) -> SD.Mode:
@@ -151,7 +152,6 @@ if __name__ == '__main__':
 
 
 # TODO 
-# (post) EmergencyTask access point
 # (post) Add station access point
 # (post) Start transmition
 # (post) End transmition
