@@ -1,10 +1,10 @@
 import threading
-from enumerators import Modes
+from enumerators import Modes, EmergencyActions
 
-# --- MODE OBJECT ---
-
+# --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
+# Mode object
+# --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
 class Mode(object):
-
     def __init__(self) -> None:
         self._changed = False
         self._mode = Modes.STANDBY
@@ -16,16 +16,16 @@ class Mode(object):
         self._mutex.release()
         return retval
 
-    def getMode(self) -> Modes: # clears _changed flag
+    def pollMode(self) -> Modes: # clears _changed flag
         self._mutex.acquire()
         retval = self._mode
         self._changed = False
         self._mutex.release()
         return retval
 
-    def getModeCode(self) -> int: # leaves _changed flag
+    def lookupMode(self) -> Modes: # leaves _changed flag unchanged
         self._mutex.acquire()
-        retval = self._mode.value
+        retval = self._mode
         self._mutex.release()
         return retval
 
@@ -34,5 +34,39 @@ class Mode(object):
         self._mode = mode
         self._changed = True
         self._mutex.release()
+# --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
 
-#---
+# --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
+# EmergencyAction object
+# --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
+class EmergencyAction(object):
+    def __init__(self) -> None:
+        self._changed = False
+        self._action = EmergencyActions.NOTASK
+        self._mutex = threading.Lock()
+    
+    def isChanged(self) -> bool:
+        self._mutex.acquire()
+        retval = self._changed
+        self._mutex.release()
+        return retval
+
+    def pollAction(self) -> EmergencyActions: # clears _changed flag
+        self._mutex.acquire()
+        retval = self._action
+        self._changed = False
+        self._mutex.release()
+        return retval
+
+    def lookupAction(self) -> EmergencyActions: # leaves _changed flag unchanged
+        self._mutex.acquire()
+        retval = self._action
+        self._mutex.release()
+        return retval
+
+    def setAction(self, action: EmergencyActions) -> None:
+        self._mutex.acquire()
+        self._action = action
+        self._changed = True
+        self._mutex.release()
+# --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
