@@ -1,8 +1,7 @@
 from flask import Flask
 from flask_restx import Resource, Api, fields
-from enumerators import Modes, modeSwitch,\
-                        EmergencyActions, emergencyActionsSwitch
-import SynchronizedData as SD
+from synchronized.SMode import *
+from synchronized.SEmergencyAction import *
 
 # --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
 # AccessPoint class:
@@ -12,14 +11,14 @@ class AccessPoint(object):
     api = Api(app)
 
     def __init__(self):
-        self._mode = SD.Mode()
-        self._emergencyAction = SD.EmergencyAction()
+        self._mode = SMode()
+        self._emergencyAction = SEmergencyAction()
 
     def run(self):
         self.app.run(debug=True, use_reloader=False)
 
     # --- Mode ---
-    def getMode(self) -> SD.Mode:
+    def getMode(self) -> SMode:
         return self._mode
 
     def pollMode(self) -> Modes:
@@ -34,7 +33,7 @@ class AccessPoint(object):
             self._mode.setMode(newMode)
 
     # --- EmergencyAction ---
-    def getEmergencyAction(self) -> SD.EmergencyAction:
+    def getEmergencyAction(self) -> SEmergencyAction:
         return self._emergencyAction
 
     def pollEmergencyAction(self) -> EmergencyActions:
