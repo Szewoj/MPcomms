@@ -44,5 +44,34 @@ class SConnection(object):
         # ---
         self._mutex.release()
 
+    def disconnect(self) -> None:
+        self._mutex.acquire()
+        # ---
+        self._status = ConnectionStatus.DISCONNECTED
+        # ---
+        self._mutex.release()
+
+    def enable(self) -> None:
+        self._mutex.acquire()
+        # ---
+        self._status = ConnectionStatus.CONNECTED_ACTIVE
+        # ---
+        self._mutex.release()
+
+    def disable(self) -> None:
+        self._mutex.acquire()
+        # ---
+        self._status = ConnectionStatus.CONNECTED_STANDBY
+        # ---
+        self._mutex.release()
+
+    def getStatus(self) -> ConnectionStatus:
+        self._mutex.acquire()
+        # ---
+        retval = self._status
+        # ---
+        self._mutex.release()
+        return retval
+
     # TODO connect, start transmitting, stop transmitting, messaging
 # --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---

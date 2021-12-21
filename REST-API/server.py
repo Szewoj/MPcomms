@@ -1,7 +1,9 @@
-from flask import Flask
+from flask import Flask, abort
 from flask_restx import Resource, Api, fields
+from authorization.magics import Magic
 from synchronized.SMode import *
 from synchronized.SEmergencyAction import *
+from synchronized.SConnection import *
 
 # --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
 # AccessPoint class:
@@ -13,12 +15,17 @@ class AccessPoint(object):
     def __init__(self):
         self._mode = SMode()
         self._emergencyAction = SEmergencyAction()
+        self._connection = SConnection()
+        self._th = None
 
     def run(self):
         self.app.run(debug=True, use_reloader=False)
 
     def run_async(self):
-        threading.Thread(target=self.run).start()
+        self._th = threading.Thread(target=self.run).start()
+
+    # --- Connection ---
+    
 
     # --- Mode ---
     def getMode(self) -> SMode:
@@ -57,9 +64,20 @@ restAP = AccessPoint()
 # --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
 # Models used in communication:
 # --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
+connectInModel = AccessPoint.api.model('ConnectRequest', {
+    'addr': fields.String(required=True, description='IPv4 address of communication endpoint'),
+    'port': fields.Integer(required=True, description='Port used for communication'),
+    'vid': fields.Integer(required=True, description='Vehicle ID set for the purpose of identification'),
+    'mgc': fields.Integer(required=True, description='Magic number for verification')
+})
+
+connectOutModel = AccessPoint.api.model('ConnectResponse', {
+    'vid': fields.Integer(required=True, description='Vehicle ID set for the purpose of identification'),
+})
+
 modeInModel = AccessPoint.api.model('ModeRequest', {
     'mode': fields.Integer(required=True, description='Mode code for vehicle to switch to'),
-    'mgck': fields.Integer(required=True, description='Magic number for verification')
+    'mgc': fields.Integer(required=True, description='Magic number for verification')
 })
 
 modeOutModel = AccessPoint.api.model('ModeResponse', {
@@ -69,7 +87,7 @@ modeOutModel = AccessPoint.api.model('ModeResponse', {
 
 emergencyInModel = AccessPoint.api.model('EmergencyActionRequest', {
     'ea': fields.Integer(required=True, description='Code for emergency action for vehicle to perform'),
-    'mgck': fields.Integer(required=True, description='Magic number for verification')
+    'mgc': fields.Integer(required=True, description='Magic number for verification')
 })
 
 emergencyOutModel = AccessPoint.api.model('EmergencyActionResponse', {
@@ -81,12 +99,26 @@ emergencyOutModel = AccessPoint.api.model('EmergencyActionResponse', {
 # --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
 # Parsers used in communication:
 # --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
+connectInParser = AccessPoint.api.parser()
+connectInParser.add_argument(
+    'addr', type=str, required=True, help='IPv4 address of communication endpoint'
+)
+connectInParser.add_argument(
+    'port', type=int, required=True, help='Port used for communication'
+)
+connectInParser.add_argument(
+    'vid', type=int, required=True, help='Vehicle ID set for the purpose of identification'
+)
+connectInParser.add_argument(
+    'mgc', type=int, required=True, help='Magic number for verification'
+)
+
 modeInParser = AccessPoint.api.parser()
 modeInParser.add_argument(
     'mode', type=int, required=True, help='Mode code for vehicle to switch to'
 )
 modeInParser.add_argument(
-    'mgck', type=int, required=True, help='Magic number for verification'
+    'mgc', type=int, required=True, help='Magic number for verification'
 )
 
 emergencyInParser = AccessPoint.api.parser()
@@ -94,17 +126,29 @@ emergencyInParser.add_argument(
     'ea', type=int, required=True, help='Code for emergency action for vehicle to perform'
 )
 emergencyInParser.add_argument(
-    'mgck', type=int, required=True, help='Magic number for verification'
+    'mgc', type=int, required=True, help='Magic number for verification'
 )
 # --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
 
 # --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
 # REST Access Points:
 # --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
-@AccessPoint.api.route('/hello')
-class HelloWorld(Resource):
-    def get(self):
-        return {'hello': 'world'}
+@AccessPoint.api.route('/connect')
+class Connection(Resource):
+    @AccessPoint.api.expect(connectInModel)
+    @AccessPoint.api.marshal_with(connectOutModel)
+    def post(self):
+        if(restAP._connection.getStatus() in [ConnectionStatus.UNKNOWN, ConnectionStatus.DISCONNECTED]): #TODO restAP.getConnectionStatus, restAP.connect
+            args = connectInParser.parse_args()
+            restAP._connection.connect(args['addr'], args['port'], args['vid'])
+            return {'vid': restAP._connection._vehicleID}
+        else:
+            abort(409, "Vehicle is already connected to another base")
+
+    @AccessPoint.api.expect(connectInModel)
+    @AccessPoint.api.marshal_with(connectOutModel)
+    def delete(self):
+        return {''}
 
 
 @AccessPoint.api.route('/mode')
