@@ -17,6 +17,9 @@ class AccessPoint(object):
     def run(self):
         self.app.run(debug=True, use_reloader=False)
 
+    def run_async(self):
+        threading.Thread(target=self.run).start()
+
     # --- Mode ---
     def getMode(self) -> SMode:
         return self._mode
@@ -154,6 +157,4 @@ if __name__ == '__main__':
 # (post) Add station access point
 # (post) Start transmition
 # (post) End transmition
-
-
 
