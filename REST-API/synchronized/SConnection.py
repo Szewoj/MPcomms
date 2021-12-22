@@ -34,6 +34,16 @@ class SConnection(object):
         self._vehicleID = -1
         self._status = ConnectionStatus.UNKNOWN
 
+    def identify(self, address:str, port:int, vid:int) -> bool:
+        self._mutex.acquire()
+        # ---
+        retval = (address == self._address and\
+                port == self._port and\
+                vid == self._vehicleID)
+        # ---
+        self._mutex.release()
+        return retval
+
     def connect(self, address:str, port:int, vid:int) -> None:
         self._mutex.acquire()
         # ---

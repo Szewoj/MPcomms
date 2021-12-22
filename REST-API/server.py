@@ -25,7 +25,17 @@ class AccessPoint(object):
         self._th = threading.Thread(target=self.run).start()
 
     # --- Connection ---
-    
+    def getConnectionStatus(self) -> ConnectionStatus:
+        return self._connection.getStatus()
+
+    def connect(self, address:str, port:int, vid:int) -> None:
+        self._connection.connect(address, port, vid)
+
+    def disconnect(self) -> None:
+        self._connection.disconnect()
+
+    def identifyConnection(self, address:str, port:int, vid:int) -> bool:
+        return self._connection.identify(address, port, vid)
 
     # --- Mode ---
     def getMode(self) -> SMode:
@@ -112,7 +122,7 @@ connectInParser.add_argument(
 connectInParser.add_argument(
     'mgc', type=int, required=True, help='Magic number for verification'
 )
-
+# ---
 modeInParser = AccessPoint.api.parser()
 modeInParser.add_argument(
     'mode', type=int, required=True, help='Mode code for vehicle to switch to'
@@ -120,7 +130,7 @@ modeInParser.add_argument(
 modeInParser.add_argument(
     'mgc', type=int, required=True, help='Magic number for verification'
 )
-
+# ---
 emergencyInParser = AccessPoint.api.parser()
 emergencyInParser.add_argument(
     'ea', type=int, required=True, help='Code for emergency action for vehicle to perform'
@@ -138,7 +148,7 @@ class Connection(Resource):
     @AccessPoint.api.expect(connectInModel)
     @AccessPoint.api.marshal_with(connectOutModel)
     def post(self):
-        if(restAP._connection.getStatus() in [ConnectionStatus.UNKNOWN, ConnectionStatus.DISCONNECTED]): #TODO restAP.getConnectionStatus, restAP.connect
+        if(restAP.getConnectionStatus() in [ConnectionStatus.UNKNOWN, ConnectionStatus.DISCONNECTED]):
             args = connectInParser.parse_args()
             restAP._connection.connect(args['addr'], args['port'], args['vid'])
             return {'vid': restAP._connection._vehicleID}
@@ -148,7 +158,15 @@ class Connection(Resource):
     @AccessPoint.api.expect(connectInModel)
     @AccessPoint.api.marshal_with(connectOutModel)
     def delete(self):
-        return {''}
+        if(restAP.getConnectionStatus() not in [ConnectionStatus.UNKNOWN, ConnectionStatus.DISCONNECTED]):
+            args = connectInParser.parse_args()
+            if(restAP.identifyConnection(args['addr'], args['port'], args['vid'])):
+                restAP.disconnect()
+                return {'vid': restAP._connection._vehicleID}
+            else:
+                abort(404, "There is no active connection with specified values")
+        else:
+            abort(404, "There is no active connection")
 
 
 @AccessPoint.api.route('/mode')
@@ -198,7 +216,6 @@ if __name__ == '__main__':
 
 
 # TODO 
-# (post) Add station access point
 # (post) Start transmition
 # (post) End transmition
 
