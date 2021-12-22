@@ -25,6 +25,9 @@ class AccessPoint(object):
         self._th = threading.Thread(target=self.run).start()
 
     # --- Connection ---
+    def getVehicleID(self) -> int:
+        return self._connection.getID()
+
     def getConnectionStatus(self) -> ConnectionStatus:
         return self._connection.getStatus()
 
@@ -36,6 +39,12 @@ class AccessPoint(object):
 
     def identifyConnection(self, address:str, port:int, vid:int) -> bool:
         return self._connection.identify(address, port, vid)
+
+    def activate(self, toggle:bool) -> None:
+        if toggle:
+            self._connection.enable()
+        else:
+            self._connection.disable()    
 
     # --- Mode ---
     def getMode(self) -> SMode:
@@ -82,7 +91,18 @@ connectInModel = AccessPoint.api.model('ConnectRequest', {
 })
 
 connectOutModel = AccessPoint.api.model('ConnectResponse', {
-    'vid': fields.Integer(required=True, description='Vehicle ID set for the purpose of identification'),
+    'vid': fields.Integer(required=True, description='Vehicle ID'),
+})
+
+activateInModel = AccessPoint.api.model('ConnectToggleRequest', {
+    'activ': fields.Boolean(required=True, description='Activation flag'),
+    'vid': fields.Integer(required=True, description='Vehicle ID'),
+    'mgc': fields.Integer(required=True, description='Magic number for verification')
+})
+
+activateOutModel = AccessPoint.api.model('ConnectToggleResponse', {
+    'vid': fields.Integer(required=True, description='Vehicle ID'),
+    'activ': fields.Boolean(required=True, description='Activation flag'),
 })
 
 modeInModel = AccessPoint.api.model('ModeRequest', {
@@ -123,6 +143,17 @@ connectInParser.add_argument(
     'mgc', type=int, required=True, help='Magic number for verification'
 )
 # ---
+activateInParser = AccessPoint.api.parser()
+activateInParser.add_argument(
+    'activ', type=bool, required=True, help='Activation flag'
+)
+activateInParser.add_argument(
+    'vid', type=int, required=True, help='Vehicle ID'
+)
+activateInParser.add_argument(
+    'activ', type=int, required=True, help='Magic number for verification'
+)
+# ---
 modeInParser = AccessPoint.api.parser()
 modeInParser.add_argument(
     'mode', type=int, required=True, help='Mode code for vehicle to switch to'
@@ -151,7 +182,7 @@ class Connection(Resource):
         if(restAP.getConnectionStatus() in [ConnectionStatus.UNKNOWN, ConnectionStatus.DISCONNECTED]):
             args = connectInParser.parse_args()
             restAP._connection.connect(args['addr'], args['port'], args['vid'])
-            return {'vid': restAP._connection._vehicleID}
+            return {'vid': restAP.getVehicleID()}
         else:
             abort(409, "Vehicle is already connected to another base")
 
@@ -162,9 +193,26 @@ class Connection(Resource):
             args = connectInParser.parse_args()
             if(restAP.identifyConnection(args['addr'], args['port'], args['vid'])):
                 restAP.disconnect()
-                return {'vid': restAP._connection._vehicleID}
+                return {'vid': restAP.getVehicleID()}
             else:
                 abort(404, "There is no active connection with specified values")
+        else:
+            abort(404, "There is no active connection")
+
+
+@AccessPoint.api.route('/connect/activate')
+class ConnectionActivate(Resource):
+    @AccessPoint.api.expect(activateInModel)
+    @AccessPoint.api.marshal_with(activateOutModel)
+    def put(self):
+        if(restAP.getConnectionStatus() not in [ConnectionStatus.UNKNOWN, ConnectionStatus.DISCONNECTED]):
+            args = activateInParser.parse_args()
+            if(args['vid'] == restAP.getVehicleID()):
+                restAP.activate(args['activ'])
+                return {'vid': restAP.getVehicleID(),
+                        'activ': args['activ']}
+            else:
+                abort(404, "There is no active connection with passed ID")
         else:
             abort(404, "There is no active connection")
 
@@ -184,7 +232,7 @@ class Mode(Resource):
         args = modeInParser.parse_args()
         restAP.setMode(args['mode'])
         return {
-            'vid': 5, # TODO change into actual vid
+            'vid': restAP.getVehicleID(), # TODO change into actual vid
             'mode': restAP.lookupMode().value 
             }
 
@@ -194,7 +242,7 @@ class EmergencyAction(Resource):
     @AccessPoint.api.marshal_with(emergencyOutModel)
     def get(self):
         return {
-            'vid': 5, # TODO change into actual vid
+            'vid': restAP.getVehicleID(), # TODO change into actual vid
             'ea': restAP.lookupEmergencyAction().value
             }
 
@@ -204,7 +252,7 @@ class EmergencyAction(Resource):
         args = emergencyInParser.parse_args()
         restAP.setEmergencyAction(args['ea'])
         return {
-            'vid': 5, # TODO change into actual vid
+            'vid': restAP.getVehicleID(), # TODO change into actual vid
             'ea': restAP.lookupEmergencyAction().value
             }
 
@@ -213,9 +261,4 @@ class EmergencyAction(Resource):
 
 if __name__ == '__main__':
     restAP.run()
-
-
-# TODO 
-# (post) Start transmition
-# (post) End transmition
 

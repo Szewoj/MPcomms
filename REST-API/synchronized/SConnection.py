@@ -83,5 +83,13 @@ class SConnection(object):
         self._mutex.release()
         return retval
 
+    def getID(self) -> int:
+        self._mutex.acquire()
+        # ---
+        retval = self._vehicleID
+        # ---
+        self._mutex.release()
+        return retval
+
     # TODO connect, start transmitting, stop transmitting, messaging
 # --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
