@@ -1,8 +1,8 @@
 from enum import Enum
 
 class Magic(Enum):
-    MODE_CHANGE             = 0x32FF7D81
-    EMERGENCY_ACTION_SET    = 0x3BD87AE4
-    CONNECTION_ADD          = 0x5810EE15
-    CONNECTION_DELETE       = 0x45313AD5
-    CONNECTION_TOGGLE       = 0x2E9A5C25
+    MODE_CHANGE             = 0x7D81 # 32129
+    EMERGENCY_ACTION_SET    = 0x7AE4 # 31460
+    CONNECTION_ADD          = 0xEE15 # 60949
+    CONNECTION_DELETE       = 0x3AD5 # 15061
+    CONNECTION_TOGGLE       = 0x5C25 # 23589

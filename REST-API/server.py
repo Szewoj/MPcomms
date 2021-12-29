@@ -6,7 +6,7 @@ from synchronized.SEmergencyAction import *
 from synchronized.SConnection import *
 from AccessPoint import *
 
-# Access variable 'restAP' to communicate with server
+# AccessPoint variable 'restAP' to communicate with server
 restAP = AccessPoint()
 
 # --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
@@ -16,7 +16,7 @@ connectInModel = AccessPoint.api.model('ConnectRequest', {
     'addr': fields.String(required=True, description='IPv4 address of communication endpoint'),
     'port': fields.Integer(required=True, description='Port used for communication'),
     'vid': fields.Integer(required=True, description='Vehicle ID set for the purpose of identification'),
-    'mgc': fields.Integer(required=True, description='Magic number for verification')
+    'mgc': fields.Integer(required=True, description='Magic number for verification, add: 60949; delete: 15061')
 })
 
 connectOutModel = AccessPoint.api.model('ConnectResponse', {
@@ -26,7 +26,7 @@ connectOutModel = AccessPoint.api.model('ConnectResponse', {
 activateInModel = AccessPoint.api.model('ConnectToggleRequest', {
     'activ': fields.Boolean(required=True, description='Activation flag'),
     'vid': fields.Integer(required=True, description='Vehicle ID'),
-    'mgc': fields.Integer(required=True, description='Magic number for verification')
+    'mgc': fields.Integer(required=True, default=Magic.CONNECTION_TOGGLE.value, description='Magic number for verification')
 })
 
 activateOutModel = AccessPoint.api.model('ConnectToggleResponse', {
@@ -36,7 +36,7 @@ activateOutModel = AccessPoint.api.model('ConnectToggleResponse', {
 
 modeInModel = AccessPoint.api.model('ModeRequest', {
     'mode': fields.Integer(required=True, description='Mode code for vehicle to switch to'),
-    'mgc': fields.Integer(required=True, description='Magic number for verification')
+    'mgc': fields.Integer(required=True, default=Magic.MODE_CHANGE.value, description='Magic number for verification')
 })
 
 modeOutModel = AccessPoint.api.model('ModeResponse', {
@@ -46,7 +46,7 @@ modeOutModel = AccessPoint.api.model('ModeResponse', {
 
 emergencyInModel = AccessPoint.api.model('EmergencyActionRequest', {
     'ea': fields.Integer(required=True, description='Code for emergency action for vehicle to perform'),
-    'mgc': fields.Integer(required=True, description='Magic number for verification')
+    'mgc': fields.Integer(required=True, default=Magic.EMERGENCY_ACTION_SET.value, description='Magic number for verification')
 })
 
 emergencyOutModel = AccessPoint.api.model('EmergencyActionResponse', {
@@ -110,8 +110,11 @@ class Connection(Resource):
     def post(self):
         if(restAP.isOffline()):
             args = connectInParser.parse_args()
-            restAP._connection.connect(args['addr'], args['port'], args['vid'])
-            return {'vid': restAP.getVehicleID()}
+            if(args['mgc'] == Magic.CONNECTION_ADD.value):
+                restAP._connection.connect(args['addr'], args['port'], args['vid'])
+                return {'vid': restAP.getVehicleID()}
+            else:
+                abort(406, "Wrong operation code number")
         else:
             abort(409, "Vehicle is already connected to another base")
 
@@ -120,11 +123,14 @@ class Connection(Resource):
     def delete(self):
         if(restAP.isOnline()):
             args = connectInParser.parse_args()
-            if(restAP.identifyConnection(args['addr'], args['port'], args['vid'])):
-                restAP.disconnect()
-                return {'vid': restAP.getVehicleID()}
+            if(args['mgc'] == Magic.CONNECTION_DELETE.value):
+                if(restAP.identifyConnection(args['addr'], args['port'], args['vid'])):
+                    restAP.disconnect()
+                    return {'vid': restAP.getVehicleID()}
+                else:
+                    abort(404, "There is no active connection with specified values")
             else:
-                abort(404, "There is no active connection with specified values")
+                abort(406, "Wrong operation code number")
         else:
             abort(404, "There is no active connection")
 
@@ -136,12 +142,15 @@ class ConnectionActivate(Resource):
     def put(self):
         if(restAP.isOnline()):
             args = activateInParser.parse_args()
-            if(args['vid'] == restAP.getVehicleID()):
-                restAP.activate(args['activ'])
-                return {'vid': restAP.getVehicleID(),
-                        'activ': args['activ']}
+            if(args['mgc'] == Magic.CONNECTION_TOGGLE.value):
+                if(args['vid'] == restAP.getVehicleID()):
+                    restAP.activate(args['activ'])
+                    return {'vid': restAP.getVehicleID(),
+                            'activ': args['activ']}
+                else:
+                    abort(404, "There is no active connection with passed ID")
             else:
-                abort(404, "There is no active connection with passed ID")
+                abort(406, "Wrong operation code number")
         else:
             abort(404, "There is no active connection")
 
@@ -159,11 +168,14 @@ class Mode(Resource):
     @AccessPoint.api.marshal_with(modeOutModel)
     def post(self):
         args = modeInParser.parse_args()
-        restAP.setMode(args['mode'])
-        return {
-            'vid': restAP.getVehicleID(),
-            'mode': restAP.lookupMode().value 
-            }
+        if(args['mgc'] == Magic.MODE_CHANGE.value):
+            restAP.setMode(args['mode'])
+            return {
+                'vid': restAP.getVehicleID(),
+                'mode': restAP.lookupMode().value 
+                }
+        else:
+            abort(406, "Wrong operation code number")
 
 
 @AccessPoint.api.route('/emergency')
@@ -179,11 +191,14 @@ class EmergencyAction(Resource):
     @AccessPoint.api.marshal_with(emergencyOutModel)
     def post(self):
         args = emergencyInParser.parse_args()
-        restAP.setEmergencyAction(args['ea'])
-        return {
-            'vid': restAP.getVehicleID(),
-            'ea': restAP.lookupEmergencyAction().value
-            }
+        if(args['mgc'] == Magic.MODE_CHANGE.value):
+            restAP.setEmergencyAction(args['ea'])
+            return {
+                'vid': restAP.getVehicleID(),
+                'ea': restAP.lookupEmergencyAction().value
+                }
+        else:
+            abort(406, "Wrong operation code number")
 
 # --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
 
