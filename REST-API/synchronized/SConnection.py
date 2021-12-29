@@ -5,9 +5,9 @@ from enum import Enum
 # ConnectionStatus - status enumerator:
 # --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
 class ConnectionStatus(Enum):
-    UNKNOWN           = -1
+    UNKNOWN           = 0b001
     DISCONNECTED      = 0b000
-    PENDING           = 0b001
+    PENDING           = 0b011
     CONNECTED_STANDBY = 0b010
     CONNECTED_ACTIVE  = 0b110
 # --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
@@ -17,7 +17,7 @@ class ConnectionStatus(Enum):
 # --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
 connectionStatusSwitch = {
     0b000: ConnectionStatus.DISCONNECTED,
-    0b001: ConnectionStatus.PENDING,
+    0b011: ConnectionStatus.PENDING,
     0b010: ConnectionStatus.CONNECTED_STANDBY,
     0b110: ConnectionStatus.CONNECTED_ACTIVE
 }
@@ -91,5 +91,23 @@ class SConnection(object):
         self._mutex.release()
         return retval
 
-    # TODO connect, start transmitting, stop transmitting, messaging
+    def isOnline(self) -> bool:
+        self._mutex.acquire()
+        # ---
+        retval = self._status.value & ConnectionStatus.CONNECTED_STANDBY.value\
+             == ConnectionStatus.CONNECTED_STANDBY.value
+        # ---
+        self._mutex.release()
+        return retval
+
+    def isOffline(self) -> bool:
+        self._mutex.acquire()
+        # ---
+        retval = self._status.value & ConnectionStatus.CONNECTED_STANDBY.value\
+             == 0
+        # ---
+        self._mutex.release()
+        return retval
+
+    # TODO messaging
 # --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---

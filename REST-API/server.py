@@ -31,6 +31,12 @@ class AccessPoint(object):
     def getConnectionStatus(self) -> ConnectionStatus:
         return self._connection.getStatus()
 
+    def isOnline(self) -> bool:
+        return self._connection.isOnline()
+
+    def isOffline(self) -> bool:
+        return self._connection.isOffline()
+
     def connect(self, address:str, port:int, vid:int) -> None:
         self._connection.connect(address, port, vid)
 
@@ -179,7 +185,7 @@ class Connection(Resource):
     @AccessPoint.api.expect(connectInModel)
     @AccessPoint.api.marshal_with(connectOutModel)
     def post(self):
-        if(restAP.getConnectionStatus() in [ConnectionStatus.UNKNOWN, ConnectionStatus.DISCONNECTED]):
+        if(restAP.isOffline()):
             args = connectInParser.parse_args()
             restAP._connection.connect(args['addr'], args['port'], args['vid'])
             return {'vid': restAP.getVehicleID()}
@@ -189,7 +195,7 @@ class Connection(Resource):
     @AccessPoint.api.expect(connectInModel)
     @AccessPoint.api.marshal_with(connectOutModel)
     def delete(self):
-        if(restAP.getConnectionStatus() not in [ConnectionStatus.UNKNOWN, ConnectionStatus.DISCONNECTED]):
+        if(restAP.isOnline()):
             args = connectInParser.parse_args()
             if(restAP.identifyConnection(args['addr'], args['port'], args['vid'])):
                 restAP.disconnect()
@@ -205,7 +211,7 @@ class ConnectionActivate(Resource):
     @AccessPoint.api.expect(activateInModel)
     @AccessPoint.api.marshal_with(activateOutModel)
     def put(self):
-        if(restAP.getConnectionStatus() not in [ConnectionStatus.UNKNOWN, ConnectionStatus.DISCONNECTED]):
+        if(restAP.isOnline()):
             args = activateInParser.parse_args()
             if(args['vid'] == restAP.getVehicleID()):
                 restAP.activate(args['activ'])
