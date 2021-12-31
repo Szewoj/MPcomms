@@ -18,46 +18,41 @@ connectInModel = AccessPoint.api.model('ConnectRequest', {
     'vid': fields.Integer(required=True, description='Vehicle ID set for the purpose of identification'),
     'mgc': fields.Integer(required=True, description='Magic number for verification, add: 60949; delete: 15061')
 })
-
+# ---
 connectOutModel = AccessPoint.api.model('ConnectResponse', {
     'vid': fields.Integer(required=True, description='Vehicle ID'),
 })
-
+# ---
 activateInModel = AccessPoint.api.model('ConnectToggleRequest', {
     'activ': fields.Boolean(required=True, description='Activation flag'),
     'vid': fields.Integer(required=True, description='Vehicle ID'),
     'mgc': fields.Integer(required=True, default=Magic.CONNECTION_TOGGLE.value, description='Magic number for verification')
 })
-
+# ---
 activateOutModel = AccessPoint.api.model('ConnectToggleResponse', {
     'vid': fields.Integer(required=True, description='Vehicle ID'),
     'activ': fields.Boolean(required=True, description='Activation flag'),
 })
-
+# ---
 modeInModel = AccessPoint.api.model('ModeRequest', {
     'mode': fields.Integer(required=True, description='Mode code for vehicle to switch to'),
     'mgc': fields.Integer(required=True, default=Magic.MODE_CHANGE.value, description='Magic number for verification')
 })
-
+# ---
 modeOutModel = AccessPoint.api.model('ModeResponse', {
     'vid': fields.Integer(description='Vehicle ID'),
     'mode': fields.Integer(description='Mode code, the vehicle is currently in')
 })
-
+# ---
 emergencyInModel = AccessPoint.api.model('EmergencyActionRequest', {
     'ea': fields.Integer(required=True, description='Code for emergency action for vehicle to perform'),
     'mgc': fields.Integer(required=True, default=Magic.EMERGENCY_ACTION_SET.value, description='Magic number for verification')
 })
-
+# ---
 emergencyOutModel = AccessPoint.api.model('EmergencyActionResponse', {
     'vid': fields.Integer(description='Vehicle ID'),
     'ea': fields.Integer(description='Emergency action that will be performed')
 })
-
-getDataInModel = AccessPoint.api.model('getDataRequest', {
-    'vid': fields.Integer(description='Vehicle ID'),
-})
-
 # --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
 
 # --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
@@ -102,11 +97,6 @@ emergencyInParser.add_argument(
 )
 emergencyInParser.add_argument(
     'mgc', type=int, required=True, help='Magic number for verification'
-)
-# ---
-getDataInParser = AccessPoint.api.parser()
-getDataInParser.add_argument(
-    'vid', type=int, required=True, help='Vehicle ID set for the purpose of identification'
 )
 # --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
 
