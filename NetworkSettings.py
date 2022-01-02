@@ -1,5 +1,5 @@
 # ip address of current system
-IP_ADDRESS = '192.168.0.224'
+IP_ADDRESS = '192.168.1.19'
 
 # rtmp address subsite
 RTMP_APP = '/live'
