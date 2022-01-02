@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, Blueprint
 from flask_restx import Api
 from waitress import serve
 from synchronized.SMode import *
@@ -10,7 +10,8 @@ from synchronized.SConnection import *
 # --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
 class AccessPoint(object):
     app = Flask(__name__)
-    api = Api(app)
+    blueprint = Blueprint('api', __name__, url_prefix='/api')
+    api = Api(blueprint, doc='/doc/')
 
     def __init__(self):
         self._mode = SMode()
@@ -84,4 +85,6 @@ class AccessPoint(object):
         newEA = emergencyActionsSwitch.get(code, EmergencyActions.INVALID)
         if(newEA != EmergencyActions.INVALID):
             self._emergencyAction.setAction(newEA)
+
+AccessPoint.app.register_blueprint(AccessPoint.blueprint)
 # --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
