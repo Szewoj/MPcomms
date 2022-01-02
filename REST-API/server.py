@@ -155,19 +155,24 @@ class ConnectionActivate(Resource):
             abort(409, "There is no active connection")
 
 
-@AccessPoint.api.route('/mode')
-class Mode(Resource):
+@AccessPoint.api.route('/mode/<int:vid>')
+class GetMode(Resource):
     @AccessPoint.api.marshal_with(modeOutModel)
-    def get(self):
+    def get(self, vid):
         if(restAP.isOnline()):
-            return { 
-            'vid': restAP.getVehicleID(),
-            'mode': restAP.lookupMode().value 
-            }
+            if(vid == restAP.getVehicleID()):
+                return { 
+                    'vid': vid,
+                    'mode': restAP.lookupMode().value 
+                    }
+            else:
+                abort(404, "Not an active vehicle")
         else:
             abort(409, "There is no active connection")
-        
 
+
+@AccessPoint.api.route('/mode')
+class SetMode(Resource):
     @AccessPoint.api.expect(modeInModel)
     @AccessPoint.api.marshal_with(modeOutModel)
     def post(self):
@@ -185,19 +190,24 @@ class Mode(Resource):
             abort(409, "There is no active connection")
 
 
-@AccessPoint.api.route('/emergency')
-class EmergencyAction(Resource):
+@AccessPoint.api.route('/emergency/<int:vid>')
+class GetEmergencyAction(Resource):
     @AccessPoint.api.marshal_with(emergencyOutModel)
-    def get(self):
+    def get(self, vid):
         if(restAP.isOnline()):
-            return {
-            'vid': restAP.getVehicleID(),
-            'ea': restAP.lookupEmergencyAction().value
-            }
+            if(vid == restAP.getVehicleID()):
+                return {
+                    'vid': vid,
+                    'ea': restAP.lookupEmergencyAction().value
+                    }
+            else:
+                abort(404, "Not an active vehicle")
         else:
             abort(409, "There is no active connection")
 
 
+@AccessPoint.api.route('/emergency')
+class SetEmergencyAction(Resource):
     @AccessPoint.api.expect(emergencyInModel)
     @AccessPoint.api.marshal_with(emergencyOutModel)
     def post(self):
