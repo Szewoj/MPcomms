@@ -36,6 +36,7 @@ activateOutModel = AccessPoint.api.model('ConnectToggleResponse', {
 # ---
 modeInModel = AccessPoint.api.model('ModeRequest', {
     'mode': fields.Integer(required=True, description='Mode code for vehicle to switch to'),
+    'vid': fields.Integer(required=True, description='Vehicle ID'),
     'mgc': fields.Integer(required=True, default=Magic.MODE_CHANGE.value, description='Magic number for verification')
 })
 # ---
@@ -46,6 +47,7 @@ modeOutModel = AccessPoint.api.model('ModeResponse', {
 # ---
 emergencyInModel = AccessPoint.api.model('EmergencyActionRequest', {
     'ea': fields.Integer(required=True, description='Code for emergency action for vehicle to perform'),
+    'vid': fields.Integer(required=True, description='Vehicle ID'),
     'mgc': fields.Integer(required=True, default=Magic.EMERGENCY_ACTION_SET.value, description='Magic number for verification')
 })
 # ---
@@ -88,12 +90,18 @@ modeInParser.add_argument(
     'mode', type=int, required=True, help='Mode code for vehicle to switch to'
 )
 modeInParser.add_argument(
+    'vid', type=int, required=True, help='Vehicle ID'
+)
+modeInParser.add_argument(
     'mgc', type=int, required=True, help='Magic number for verification'
 )
 # ---
 emergencyInParser = AccessPoint.api.parser()
 emergencyInParser.add_argument(
     'ea', type=int, required=True, help='Code for emergency action for vehicle to perform'
+)
+emergencyInParser.add_argument(
+    'vid', type=int, required=True, help='Vehicle ID'
 )
 emergencyInParser.add_argument(
     'mgc', type=int, required=True, help='Magic number for verification'
@@ -179,11 +187,14 @@ class SetMode(Resource):
         if(restAP.isOnline()):
             args = modeInParser.parse_args()
             if(args['mgc'] == Magic.MODE_CHANGE.value):
-                restAP.setMode(args['mode'])
-                return {
-                    'vid': restAP.getVehicleID(),
-                    'mode': restAP.lookupMode().value 
-                    }
+                if(args['vid'] == restAP.getVehicleID()):
+                    restAP.setMode(args['mode'])
+                    return {
+                        'vid': restAP.getVehicleID(),
+                        'mode': restAP.lookupMode().value 
+                        }
+                else:
+                    abort(404, "There is no active connection with passed ID")    
             else:
                 abort(406, "Wrong operation code number")
         else:
@@ -214,11 +225,14 @@ class SetEmergencyAction(Resource):
         if(restAP.isOnline()):
             args = emergencyInParser.parse_args()
             if(args['mgc'] == Magic.MODE_CHANGE.value):
-                restAP.setEmergencyAction(args['ea'])
-                return {
-                    'vid': restAP.getVehicleID(),
-                    'ea': restAP.lookupEmergencyAction().value
-                    }
+                if(args['vid'] == restAP.getVehicleID()):
+                    restAP.setEmergencyAction(args['ea'])
+                    return {
+                        'vid': restAP.getVehicleID(),
+                        'ea': restAP.lookupEmergencyAction().value
+                        }
+                else:
+                    abort(404, "There is no active connection with passed ID")
             else:
                 abort(406, "Wrong operation code number")
         else:
