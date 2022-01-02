@@ -1,5 +1,6 @@
 from flask import Flask
 from flask_restx import Api
+from waitress import serve
 from synchronized.SMode import *
 from synchronized.SEmergencyAction import *
 from synchronized.SConnection import *
@@ -18,10 +19,13 @@ class AccessPoint(object):
         self._th = None
 
     def run(self):
-        self.app.run(debug=True, use_reloader=False)
+        serve(AccessPoint.app, host='0.0.0.0', port=5000)
+        #self.app.run(debug=True, use_reloader=False)
 
     def run_async(self):
-        self._th = threading.Thread(target=self.run).start()
+        self._th = threading.Thread(target=self.run)
+        self._th.daemon = True
+        self._th.start()
 
     # --- Connection ---
     def getVehicleID(self) -> int:
