@@ -242,5 +242,7 @@ class SetEmergencyAction(Resource):
 
 # test run server:
 if __name__ == '__main__':
+    print("Starting server on localhost:5000")
+    print("Swagger UI accessible at http://localhost:5000/api/doc")
     restAP.run()
 
