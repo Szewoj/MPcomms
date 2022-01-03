@@ -1,9 +1,12 @@
+import requests
+import json
 from flask import Flask, Blueprint
 from flask_restx import Api
 from waitress import serve
 from synchronized.SMode import *
 from synchronized.SEmergencyAction import *
 from synchronized.SConnection import *
+from messaging.Messages import *
 
 # --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
 # AccessPoint class:
@@ -54,6 +57,16 @@ class AccessPoint(object):
             self._connection.enable()
         else:
             self._connection.disable()    
+# ---
+# --- Messaging specyfic ---
+    def send(self, msg:Message) -> bool:
+        data = self._connection.getMsgData()
+        if(data.isActive):
+            endpt = data.url + msg._url_dir
+            response = requests.post(endpt, data=json.dumps(msg.getMsg(data.vid)))
+            return response.ok
+        else:
+            return False
 # ---
 # --- Mode specyfic: ---
     def getMode(self) -> SMode:
