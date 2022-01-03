@@ -1,7 +1,10 @@
 from datetime import datetime
 
+def formatTime(t:datetime) -> str:
+    return t.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
+
 class Message(object):
-    def __init__(self, readingDate:str = datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%fZ")):
+    def __init__(self, readingDate:str = formatTime(datetime.now())):
         self.readingDate = readingDate
 
     def getMsg(self, vid:int) -> dict:
@@ -11,7 +14,7 @@ class Message(object):
         }
 
 class PointCloudMsg(Message):
-    def __init__(self, readingDate:str = datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%fZ"),\
+    def __init__(self, readingDate:str = formatTime(datetime.now()),\
         pointCloudReading:str = None):
 
         super().__init__(readingDate=readingDate)
@@ -24,9 +27,10 @@ class PointCloudMsg(Message):
         return msg
 
 class LocationMsg(Message):
-    def __init__(self, readingDate:str = datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%fZ"),\
-        slamXCoordinte:float = None, slamYCoordinate:float = None, slamRotation:float = None,\
-        realXCoordinate:float = None, realYCoordinate:float = None):
+    def __init__(self, readingDate:str = formatTime(datetime.now()),\
+        slamXCoordinte:float = None, slamYCoordinate:float = None,\
+        slamRotation:float = None, realXCoordinate:float = None,\
+        realYCoordinate:float = None):
 
         super().__init__(readingDate=readingDate)
         self.slamXCoordinte = slamXCoordinte
@@ -49,8 +53,8 @@ class LocationMsg(Message):
             msg['realYCoordinate'] = self.realYCoordinate
         return msg
 
-class LidarReading(Message):
-    def __init__(self, readingDate:str = datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%fZ"),\
+class LidarReadingMsg(Message):
+    def __init__(self, readingDate:str = formatTime(datetime.now()),\
         lidarDistancesReading:str = None):
 
         super().__init__(readingDate=readingDate)
@@ -61,6 +65,15 @@ class LidarReading(Message):
         if self.lidarDistancesReading is not None:
             msg['lidarDistancesReading'] = self.lidarDistancesReading
         return msg
+
+class ImuReadingMsg(Message):
+    pass #TODO
+
+class EncoderReadingMsg(Message):
+    pass #TODO
+
+class DiagnosticDataMsg(Message):
+    pass #TODO
 
 if __name__ == '__main__':
     print(LocationMsg(\

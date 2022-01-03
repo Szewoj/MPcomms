@@ -240,7 +240,7 @@ class SetEmergencyAction(Resource):
 
 # --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
 
-
+# test run server:
 if __name__ == '__main__':
     restAP.run()
 
