@@ -24,6 +24,18 @@ connectionStatusSwitch = {
 # --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
 
 # --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
+# MsgData container class:
+# --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
+
+class MsgData(object):
+    def __init__(self, isActive:bool = False, vid:int = None, url:str = None) -> None:
+        self.isActive = isActive
+        self.vid = vid
+        self.url = url
+
+# --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
+
+# --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
 # SConnection - synchronized connection class:
 # --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
 class SConnection(object):
@@ -91,6 +103,23 @@ class SConnection(object):
         self._mutex.release()
         return retval
 
+    def getMsgData(self) -> MsgData:
+        self._mutex.acquire()
+        # ---
+        if self._status == ConnectionStatus.CONNECTED_ACTIVE:
+            retval = MsgData(
+                isActive = True,
+                vid = self._vehicleID,
+                url = "http://" + self._address + ":" + self._port
+            )
+        else:
+            retval = MsgData(
+                isActive = False
+            )
+        # ---
+        self._mutex.release()
+        return retval
+
     def isOnline(self) -> bool:
         self._mutex.acquire()
         # ---
@@ -109,5 +138,4 @@ class SConnection(object):
         self._mutex.release()
         return retval
 
-    # TODO messaging
 # --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
