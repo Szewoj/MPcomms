@@ -64,6 +64,7 @@ class AccessPoint(object):
         if(data.isActive):
             endpt = data.url + msg._url_dir
             response = requests.post(endpt, data=json.dumps(msg.getMsg(data.vid)))
+            print("Message sent, response code: " + str(response.status_code))
             return response.ok
         else:
             return False

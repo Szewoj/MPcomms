@@ -9,14 +9,13 @@ if __name__ == "__main__":
 
     while True:
         try:
-            time.sleep(1)
-            bl = restAP.send(
+            time.sleep(5)
+            restAP.send(
                 ImuReadingMsg(
                     accelerationX=1.7,
                     accelerationY=1.8,
                     accelerationZ=1.9
                 )
             )
-            print(bl)
         except KeyboardInterrupt:
             break

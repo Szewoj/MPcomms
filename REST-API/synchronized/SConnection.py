@@ -110,7 +110,7 @@ class SConnection(object):
             retval = MsgData(
                 isActive = True,
                 vid = self._vehicleID,
-                url = "http://" + self._address + ":" + self._port
+                url = "http://" + self._address + ":" + str(self._port)
             )
         else:
             retval = MsgData(
