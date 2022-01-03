@@ -143,7 +143,24 @@ class EncoderReadingMsg(Message):
 
 class DiagnosticDataMsg(Message):
     _url_dir = '/diagnostic-reading'
-    pass #TODO
+    def __init__(self, readingDate:str = formatTime(datetime.now()),\
+        wheelsTurnMeasure:float = None, cameraTurnAngle:float = None,\
+        batteryChargeStatus:float = None):
+
+        super().__init__(readingDate=readingDate)
+        self.wheelsTurnMeasure = wheelsTurnMeasure
+        self.cameraTurnAngle = cameraTurnAngle
+        self.batteryChargeStatus = batteryChargeStatus
+
+    def getMsg(self, vid:int) -> dict:
+        msg = super().getMsg(vid)
+        if self.wheelsTurnMeasure is not None:
+            msg['wheelsTurnMeasure'] = self.wheelsTurnMeasure
+        if self.cameraTurnAngle is not None:
+            msg['cameraTurnAngle'] = self.cameraTurnAngle
+        if self.batteryChargeStatus is not None:
+            msg['batteryChargeStatus'] = self.batteryChargeStatus
+        return msg
 
 
 if __name__ == '__main__':
