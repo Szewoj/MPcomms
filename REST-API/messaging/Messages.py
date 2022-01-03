@@ -3,6 +3,7 @@ from datetime import datetime
 def formatTime(t:datetime) -> str:
     return t.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
 
+
 class Message(object):
     _url_dir = '/'
     def __init__(self, readingDate:str = formatTime(datetime.now())):
@@ -13,6 +14,7 @@ class Message(object):
             'vehicleId': vid,
             'readingDate': self.readingDate
         }
+
 
 class PointCloudMsg(Message):
     _url_dir = '/point-cloud'
@@ -27,6 +29,7 @@ class PointCloudMsg(Message):
         if self.pointCloudReading is not None:
             msg['pointCloudReading'] = self.pointCloudReading
         return msg
+
 
 class LocationMsg(Message):
     _url_dir = '/location'
@@ -56,6 +59,7 @@ class LocationMsg(Message):
             msg['realYCoordinate'] = self.realYCoordinate
         return msg
 
+
 class LidarReadingMsg(Message):
     _url_dir = '/lidar-reading'
     def __init__(self, readingDate:str = formatTime(datetime.now()),\
@@ -69,6 +73,7 @@ class LidarReadingMsg(Message):
         if self.lidarDistancesReading is not None:
             msg['lidarDistancesReading'] = self.lidarDistancesReading
         return msg
+
 
 class ImuReadingMsg(Message):
     _url_dir = '/imu-reading'
@@ -110,13 +115,36 @@ class ImuReadingMsg(Message):
             msg['magneticFieldZ'] = self.magneticFieldZ
         return msg
 
+
 class EncoderReadingMsg(Message):
     _url_dir = '/encoder-reading'
-    pass #TODO
+    def __init__(self, readingDate:str = formatTime(datetime.now()),\
+        leftFrontWheelSpeed:float = None, rightFrontWheelSpeed:float = None,\
+        leftRearWheelSpeed:float = None, rightRearWheelSpeed:float = None):
+
+        super().__init__(readingDate=readingDate)
+        self.leftFrontWheelSpeed = leftFrontWheelSpeed
+        self.rightFrontWheelSpeed = rightFrontWheelSpeed
+        self.leftRearWheelSpeed = leftRearWheelSpeed
+        self.rightRearWheelSpeed = rightRearWheelSpeed
+
+    def getMsg(self, vid:int) -> dict:
+        msg = super().getMsg(vid)
+        if self.leftFrontWheelSpeed is not None:
+            msg['leftFrontWheelSpeed'] = self.leftFrontWheelSpeed
+        if self.rightFrontWheelSpeed is not None:
+            msg['rightFrontWheelSpeed'] = self.rightFrontWheelSpeed
+        if self.leftRearWheelSpeed is not None:
+            msg['leftRearWheelSpeed'] = self.leftRearWheelSpeed
+        if self.rightRearWheelSpeed is not None:
+            msg['rightRearWheelSpeed'] = self.rightRearWheelSpeed
+        return msg
+
 
 class DiagnosticDataMsg(Message):
     _url_dir = '/diagnostic-reading'
     pass #TODO
+
 
 if __name__ == '__main__':
     print(LocationMsg(\
