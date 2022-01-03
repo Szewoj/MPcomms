@@ -4,6 +4,7 @@ def formatTime(t:datetime) -> str:
     return t.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
 
 class Message(object):
+    _url_dir = '/'
     def __init__(self, readingDate:str = formatTime(datetime.now())):
         self.readingDate = readingDate
 
@@ -14,6 +15,7 @@ class Message(object):
         }
 
 class PointCloudMsg(Message):
+    _url_dir = '/point-cloud'
     def __init__(self, readingDate:str = formatTime(datetime.now()),\
         pointCloudReading:str = None):
 
@@ -27,6 +29,7 @@ class PointCloudMsg(Message):
         return msg
 
 class LocationMsg(Message):
+    _url_dir = '/location'
     def __init__(self, readingDate:str = formatTime(datetime.now()),\
         slamXCoordinte:float = None, slamYCoordinate:float = None,\
         slamRotation:float = None, realXCoordinate:float = None,\
@@ -54,6 +57,7 @@ class LocationMsg(Message):
         return msg
 
 class LidarReadingMsg(Message):
+    _url_dir = '/lidar-reading'
     def __init__(self, readingDate:str = formatTime(datetime.now()),\
         lidarDistancesReading:str = None):
 
@@ -67,16 +71,55 @@ class LidarReadingMsg(Message):
         return msg
 
 class ImuReadingMsg(Message):
-    pass #TODO
+    _url_dir = '/imu-reading'
+    def __init__(self, readingDate:str = formatTime(datetime.now()),\
+        accelerationX:float = None, accelerationY:float = None, accelerationZ:float = None,\
+        angularVelocityX:float = None, angularVelocityY:float = None, angularVelocityZ:float = None,\
+        magneticFieldX:float = None, magneticFieldY:float = None, magneticFieldZ:float = None):
+
+        super().__init__(readingDate=readingDate)
+        self.accelerationX = accelerationX
+        self.accelerationY = accelerationY
+        self.accelerationZ = accelerationZ
+        self.angularVelocityX = angularVelocityX
+        self.angularVelocityY = angularVelocityY
+        self.angularVelocityZ = angularVelocityZ
+        self.magneticFieldX = magneticFieldX
+        self.magneticFieldY = magneticFieldY
+        self.magneticFieldZ = magneticFieldZ
+
+    def getMsg(self, vid:int) -> dict:
+        msg = super().getMsg(vid)
+        if self.accelerationX is not None:
+            msg['accelerationX'] = self.accelerationX
+        if self.accelerationY is not None:
+            msg['accelerationY'] = self.accelerationY
+        if self.accelerationZ is not None:
+            msg['accelerationZ'] = self.accelerationZ
+        if self.angularVelocityX is not None:
+            msg['angularVelocityX'] = self.angularVelocityX
+        if self.angularVelocityY is not None:
+            msg['angularVelocityY'] = self.angularVelocityY
+        if self.angularVelocityZ is not None:
+            msg['angularVelocityZ'] = self.angularVelocityZ
+        if self.magneticFieldX is not None:
+            msg['magneticFieldX'] = self.magneticFieldX
+        if self.magneticFieldY is not None:
+            msg['magneticFieldY'] = self.magneticFieldY
+        if self.magneticFieldZ is not None:
+            msg['magneticFieldZ'] = self.magneticFieldZ
+        return msg
 
 class EncoderReadingMsg(Message):
+    _url_dir = '/encoder-reading'
     pass #TODO
 
 class DiagnosticDataMsg(Message):
+    _url_dir = '/diagnostic-reading'
     pass #TODO
 
 if __name__ == '__main__':
     print(LocationMsg(\
-        slamRot=5.0,\
-        slamYCoord=10.0
+        slamRotation=5.0,\
+        slamYCoordinate=10.0
         ).getMsg(5))
