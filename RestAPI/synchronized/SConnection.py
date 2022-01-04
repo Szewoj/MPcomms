@@ -138,4 +138,12 @@ class SConnection(object):
         self._mutex.release()
         return retval
 
+    def isActive(self) -> bool:
+        self._mutex.acquire()
+        # ---
+        retval = self._status == ConnectionStatus.CONNECTED_ACTIVE
+        # ---
+        self._mutex.release()
+        return retval
+
 # --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---

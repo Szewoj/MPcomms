@@ -40,6 +40,9 @@ class AccessPoint(object):
     def isOnline(self) -> bool:
         return self._connection.isOnline()
 # ---
+    def isActive(self) -> bool:
+        return self._connection.isActive()
+# ---
     def isOffline(self) -> bool:
         return self._connection.isOffline()
 # ---
@@ -72,6 +75,9 @@ class AccessPoint(object):
             return False
 # ---
 # --- Mode specyfic: ---
+    def modeChanged(self) -> bool:
+        return self._mode.isChanged()
+# ---
     def getMode(self) -> SMode:
         return self._mode
 # ---
@@ -87,6 +93,9 @@ class AccessPoint(object):
             self._mode.setMode(newMode)
 # ---
 # --- EmergencyAction specyfic: ---
+    def emergencyActionChanged(self) -> bool:
+        return self._emergencyAction.isChanged()
+# ---
     def getEmergencyAction(self) -> SEmergencyAction:
         return self._emergencyAction
 # ---
