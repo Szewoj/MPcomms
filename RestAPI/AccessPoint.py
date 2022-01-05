@@ -3,10 +3,10 @@ import json
 from flask import Flask, Blueprint
 from flask_restx import Api
 from waitress import serve
-from synchronized.SMode import *
-from synchronized.SEmergencyAction import *
-from synchronized.SConnection import *
-from messaging.Messages import *
+from RestAPI.synchronized.SMode import *
+from RestAPI.synchronized.SEmergencyAction import *
+from RestAPI.synchronized.SConnection import *
+from RestAPI.messaging.Messages import *
 
 # --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
 # AccessPoint class:
@@ -67,9 +67,9 @@ class AccessPoint(object):
         if(data.isActive):
             endpt = data.url + msg._url_dir
             response = requests.post(endpt, json=msg.getMsg(data.vid))
-            print("Message sent to " + endpt)
-            print("\tReceived code" + str(response.status_code))
-            print("\tmsg body: " + json.dumps(msg.getMsg(data.vid)))
+#            print("Message sent to " + endpt)
+#            print("\tReceived code " + str(response.status_code))
+#            print("\tmsg body: " + json.dumps(msg.getMsg(data.vid)))
             return response.ok
         else:
             return False

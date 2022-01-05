@@ -1,10 +1,10 @@
 from flask import abort
 from flask_restx import Resource, fields
-from authorization.magics import Magic
-from synchronized.SMode import *
-from synchronized.SEmergencyAction import *
-from synchronized.SConnection import *
-from AccessPoint import *
+from RestAPI.authorization.magics import Magic
+from RestAPI.synchronized.SMode import *
+from RestAPI.synchronized.SEmergencyAction import *
+from RestAPI.synchronized.SConnection import *
+from RestAPI.AccessPoint import *
 
 # AccessPoint variable 'restAP' to communicate with server
 restAP = AccessPoint()
@@ -224,7 +224,7 @@ class SetEmergencyAction(Resource):
     def post(self):
         if(restAP.isOnline()):
             args = emergencyInParser.parse_args()
-            if(args['mgc'] == Magic.MODE_CHANGE.value):
+            if(args['mgc'] == Magic.EMERGENCY_ACTION_SET.value):
                 if(args['vid'] == restAP.getVehicleID()):
                     restAP.setEmergencyAction(args['ea'])
                     return {
