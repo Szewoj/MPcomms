@@ -142,7 +142,7 @@ class EncoderReadingMsg(Message):
 
 
 class DiagnosticDataMsg(Message):
-    _url_dir = '/diagnostic-reading'
+    _url_dir = '/diagnostic-data'
     def __init__(self, readingDate:str = formatTime(datetime.now()),\
         wheelsTurnMeasure:float = None, cameraTurnAngle:float = None,\
         batteryChargeStatus:float = None):
