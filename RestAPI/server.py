@@ -147,7 +147,7 @@ class Connection(Resource):
 class ConnectionActivate(Resource):
     @AccessPoint.api.expect(activateInModel)
     @AccessPoint.api.marshal_with(activateOutModel)
-    def put(self):
+    def post(self):
         if(restAP.isOnline()):
             args = activateInParser.parse_args()
             if(args['mgc'] == Magic.CONNECTION_TOGGLE.value):
