@@ -2,26 +2,28 @@ import cv2
 import ffmpeg
 
 
-RTMP_PATH = 'rtmp://192.168.0.224:1935/live/rgb'
+RTMP_PATH = 'rtmp://localhost/live/rgb'
 
 if __name__ == "__main__":
 
 
     process = (
         ffmpeg
-        .input('pipe:', r='6')
+        .input('pipe:')
         .output(RTMP_PATH, vcodec='libx264', pix_fmt='yuv420p', preset='ultrafast', tune='zerolatency',
-        r='20', g='50', video_bitrate='1.4M', maxrate='2M', bufsize='2M', segment_time='6',
-        format='flv')
+        s='640x480', format='flv')
         .run_async(pipe_stdin=True)
     )
 
     cap = cv2.VideoCapture(0)
 
+    encode_param = [int(cv2.IMWRITE_JPEG_QUALITY), 50]
+
     while True:
         ret, img = cap.read()
         if ret:
-            ret2, img2 = cv2.imencode('.png', img)
+            
+            ret2, img2 = cv2.imencode('.jpg', img, encode_param)
             process.stdin.write(img2.tobytes())
 
             cv2.imshow('streamer', img)

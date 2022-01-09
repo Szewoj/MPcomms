@@ -1,28 +1,35 @@
 #!/usr/bin/env python3
 import ffmpeg
-import streaming.NSProxy as NS
 
+# --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
+# VideoStreamer - rtmp video provider class:
+# --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
 class VideoStreamer:
+    __RTMP_ADDRESS = "rtmp://localhost/live" # for provided nginx settings it stays the same
+# ---
     def __init__(self, streamKey):
-        self.rtmpAddr = NS.RTMP_ADDRESS + '/' + streamKey
+        self.streamKey = streamKey
+        self.running = False
+        
+    def getRTMPAddress(self) -> str:
+        return VideoStreamer.__RTMP_ADDRESS + '/' + self.streamKey
+# ---
+    def run(self):
         self.stream = (
             ffmpeg
-            .input('pipe:', r='6')
-            .output(self.rtmpAddr,vcodec='libx264', pix_fmt='yuv420p', preset='ultrafast', tune='zerolatency',
-            r='30', g='50', video_bitrate='1.4M', maxrate='4M', bufsize='0M', segment_time='6',
-            format='flv', loglevel="quiet")
+            .input('pipe:')
+            .output(self.getRTMPAddress(), vcodec='libx264', pix_fmt='yuv420p', preset='ultrafast', tune='zerolatency',
+            s='640x480', format='flv', loglevel="panic")
         )
-
-    def run(self):
         self.process = ffmpeg.run_async(self.stream, pipe_stdin=True)
-
+# ---
     def write_bytes(self, bytes):
         self.process.stdin.write(bytes)
-
+# ---
     def close(self):
         self.process.stdin.close()
         self.process.terminate()
-
+# ---
 
 if __name__ == '__main__':
     v = VideoStreamer('rgb')

@@ -1,20 +1,20 @@
 import cv2
-import streaming.VideoStreamer as VS
-import time
+import RTMPVideo.streaming.VideoStreamer as VS
 
 
 if __name__ == "__main__":
 
     cap = cv2.VideoCapture(0)
 
-    streamer = VS.VideoStreamer('rgb.flv')
+    streamer = VS.VideoStreamer('rgb')
 
     streamer.run()
+    encode_param = [int(cv2.IMWRITE_JPEG_QUALITY), 50]
 
     while True:
         ret, img = cap.read()
         if ret:
-            ret2, img2 = cv2.imencode('.png', img)
+            ret2, img2 = cv2.imencode('.jpg', img, encode_param)
 
             streamer.write_bytes(img2.tobytes())
 
