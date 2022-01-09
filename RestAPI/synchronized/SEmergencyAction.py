@@ -49,9 +49,14 @@ class SEmergencyAction(object):
         self._mutex.release()
         return retval
 
-    def setAction(self, action: EmergencyActions) -> None:
+    def postAction(self, action: EmergencyActions) -> None: # sets _changed flag
         self._mutex.acquire()
         self._action = action
         self._changed = True
+        self._mutex.release()
+
+    def setAction(self, action: EmergencyActions) -> None: # leaves _changed flag unchanged
+        self._mutex.acquire()
+        self._action = action
         self._mutex.release()
 # --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---

@@ -188,7 +188,7 @@ class SetMode(Resource):
             args = modeInParser.parse_args()
             if(args['mgc'] == Magic.MODE_CHANGE.value):
                 if(args['vid'] == restAP.getVehicleID()):
-                    restAP.setMode(args['mode'])
+                    restAP.postMode(args['mode'])
                     return {
                         'vid': restAP.getVehicleID(),
                         'mode': restAP.lookupMode().value 
@@ -226,7 +226,7 @@ class SetEmergencyAction(Resource):
             args = emergencyInParser.parse_args()
             if(args['mgc'] == Magic.EMERGENCY_ACTION_SET.value):
                 if(args['vid'] == restAP.getVehicleID()):
-                    restAP.setEmergencyAction(args['ea'])
+                    restAP.postEmergencyAction(args['ea'])
                     return {
                         'vid': restAP.getVehicleID(),
                         'ea': restAP.lookupEmergencyAction().value

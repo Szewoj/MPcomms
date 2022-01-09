@@ -6,6 +6,10 @@
 # Import used messages from messaging package:
 from RestAPI.messaging.Messages import formatTime, ImuReadingMsg, DiagnosticDataMsg
 
+# Import enums used in state variables:
+from RestAPI.synchronized.SEmergencyAction import EmergencyActions
+from RestAPI.synchronized.SMode import Modes
+
 # Import AccessPoint variable form server package:
 from RestAPI.server import restAP 
 
@@ -85,6 +89,15 @@ if __name__ == "__main__":
                 ea = restAP.pollEmergencyAction() # <- poll resets _changed flag
                 # mode changed routine goes here:
                 print("Received new emergency action: " + str(ea))
+
+            # --- --- --- --- --- --- ---
+
+            # --- --- --- --- --- --- ---
+            # --- SET API VARIABLES:  ---
+            # --- --- --- --- --- --- ---
+
+            if(restAP.lookupEmergencyAction() == EmergencyActions.STOP):
+                restAP.setMode(Modes.STANDBY)
 
             # --- --- --- --- --- --- ---
         except KeyboardInterrupt:

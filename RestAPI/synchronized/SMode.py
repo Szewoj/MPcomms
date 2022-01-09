@@ -49,9 +49,14 @@ class SMode(object):
         self._mutex.release()
         return retval
 
-    def setMode(self, mode: Modes) -> None:
+    def postMode(self, mode: Modes) -> None: # sets _changed flag 
         self._mutex.acquire()
         self._mode = mode
         self._changed = True
+        self._mutex.release()
+
+    def setMode(self, mode: Modes) -> None: # leaves _changed flag unchanged
+        self._mutex.acquire()
+        self._mode = mode
         self._mutex.release()
 # --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---

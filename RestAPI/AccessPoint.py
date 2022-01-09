@@ -87,10 +87,14 @@ class AccessPoint(object):
     def lookupMode(self) -> Modes:
         return self._mode.lookupMode()
 # ---
-    def setMode(self, code) -> None:
+    def postMode(self, code) -> None:
         newMode = modeSwitch.get(code, Modes.INVALID)
         if(newMode != Modes.INVALID):
-            self._mode.setMode(newMode)
+            self._mode.postMode(newMode)
+# ---
+    def setMode(self, mode:Modes) -> None:
+        if(mode != Modes.INVALID):
+            self._mode.setMode(mode)
 # ---
 # --- EmergencyAction specyfic: ---
     def emergencyActionChanged(self) -> bool:
@@ -105,10 +109,14 @@ class AccessPoint(object):
     def lookupEmergencyAction(self) -> EmergencyActions:
         return self._emergencyAction.lookupAction()
 # ---
-    def setEmergencyAction(self, code) -> None:
+    def postEmergencyAction(self, code) -> None:
         newEA = emergencyActionsSwitch.get(code, EmergencyActions.INVALID)
         if(newEA != EmergencyActions.INVALID):
-            self._emergencyAction.setAction(newEA)
+            self._emergencyAction.postAction(newEA)
+# ---
+    def setEmergencyAction(self, action:EmergencyActions) -> None:
+        if(action != EmergencyActions.INVALID):
+            self._emergencyAction.setAction(action)
 # ---
 # --- AccessPoint ends here: ---
 
