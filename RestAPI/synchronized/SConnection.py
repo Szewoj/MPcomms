@@ -62,7 +62,7 @@ class SConnection(object):
         self._address = address
         self._port = port
         self._vehicleID = vid
-        self._status = ConnectionStatus.CONNECTED_STANDBY
+        self._status = ConnectionStatus.CONNECTED_ACTIVE
         # ---
         self._mutex.release()
 
