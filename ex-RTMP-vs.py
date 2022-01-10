@@ -6,20 +6,27 @@ if __name__ == "__main__":
 
     cap = cv2.VideoCapture(0)
 
-    streamer = VS.VideoStreamer('rgb')
+    streamer_rgb = VS.VideoStreamer('rgb')
+    streamer_gs = VS.VideoStreamer('gs')
 
-    streamer.run()
-    encode_param = [int(cv2.IMWRITE_JPEG_QUALITY), 50]
+    streamer_rgb.run()
+    streamer_gs.run()
 
     while True:
         ret, img = cap.read()
         if ret:
-            ret2, img2 = cv2.imencode('.jpg', img, encode_param)
+            
+            img_g = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
-            streamer.write_bytes(img2.tobytes())
+            ret2, img_rgb = cv2.imencode('.bmp', img)
+            ret3, img_gs = cv2.imencode('.bmp', img_g)
+
+            streamer_rgb.write_bytes(img_rgb.tobytes())
+            streamer_gs.write_bytes(img_gs.tobytes())
 
             cv2.imshow('streamer', img)
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
 
-    streamer.close()
+    streamer_rgb.close()
+    streamer_gs.close()
