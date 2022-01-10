@@ -13,18 +13,14 @@ if __name__ == "__main__":
     streamer_gs.run()
 
     while True:
-        ret, img = cap.read()
+        ret, img_rgb = cap.read()
         if ret:
-            
-            img_g = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+            img_gs = cv2.cvtColor(img_rgb, cv2.COLOR_BGR2GRAY)
 
-            ret2, img_rgb = cv2.imencode('.bmp', img)
-            ret3, img_gs = cv2.imencode('.bmp', img_g)
+            streamer_rgb.publishFrame(img_rgb)
+            streamer_gs.publishFrame(img_gs)
 
-            streamer_rgb.write_bytes(img_rgb.tobytes())
-            streamer_gs.write_bytes(img_gs.tobytes())
-
-            cv2.imshow('streamer', img)
+            cv2.imshow('streamer', img_rgb)
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
 
