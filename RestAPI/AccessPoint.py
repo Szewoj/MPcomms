@@ -66,11 +66,20 @@ class AccessPoint(object):
         data = self._connection.getMsgData()
         if(data.isActive):
             endpt = data.url + msg._url_dir
-            response = requests.post(endpt, json=msg.getMsg(data.vid))
+            try:
+                response = requests.post(endpt, json=msg.getMsg(data.vid))
+                ok = response.ok
+            except requests.exceptions.RequestException as e: # error occured
+                self._connection.registerError()
+                ok = False
 #            print("Message sent to " + endpt)
 #            print("\tReceived code " + str(response.status_code))
 #            print("\tmsg body: " + json.dumps(msg.getMsg(data.vid)))
-            return response.ok
+#            print("delay: " + str(response.elapsed))
+            if ok:
+                self._connection.registerSuccess()
+                return True
+            return False
         else:
             return False
 # ---

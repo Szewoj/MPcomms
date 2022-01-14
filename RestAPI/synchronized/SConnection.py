@@ -1,6 +1,8 @@
 import threading
 from enum import Enum
 
+import requests
+
 # --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
 # ConnectionStatus - status enumerator:
 # --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
@@ -39,12 +41,17 @@ class MsgData(object):
 # SConnection - synchronized connection class:
 # --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
 class SConnection(object):
+    _MAX_EC = 10
+    _MAX_PND = 2
+
     def __init__(self) -> None:
         self._mutex = threading.Lock()
         self._address = "-1"
         self._port = -1
         self._vehicleID = -1
         self._status = ConnectionStatus.UNKNOWN
+        self._errorCounter = 0
+        self._pendingCounter = 0
 
     def identify(self, address:str, port:int, vid:int) -> bool:
         self._mutex.acquire()
@@ -141,9 +148,56 @@ class SConnection(object):
     def isActive(self) -> bool:
         self._mutex.acquire()
         # ---
-        retval = self._status == ConnectionStatus.CONNECTED_ACTIVE
+        status = self._status
         # ---
         self._mutex.release()
-        return retval
+        if status == ConnectionStatus.PENDING:
+            self.tryConnection()
+        return status == ConnectionStatus.CONNECTED_ACTIVE
+
+    def registerError(self) -> None:
+        self._mutex.acquire()
+        # ---
+        self._errorCounter += 1
+        if self._errorCounter > SConnection._MAX_EC:
+            self._status = ConnectionStatus.PENDING
+        # ---
+        self._mutex.release()
+
+    def registerSuccess(self) -> None:
+        online = self.isOnline()
+        self._mutex.acquire()
+        # ---
+        self._errorCounter = 0
+        if online:
+            self._status = ConnectionStatus.CONNECTED_ACTIVE
+        # ---
+        self._mutex.release()
+
+    def tryConnection(self) -> bool:
+        if self.isOnline():
+            self._mutex.acquire()
+            # ---
+            self._pendingCounter += 1
+            if self._pendingCounter > SConnection._MAX_PND:
+                print("Trying to reconnect...")
+                self._pendingCounter = 0
+                url = self._address + str(self._port) + "/vehicle/" + str(self._vehicleID)
+                try:
+                    response = requests.get(url)
+                    ok = response.ok
+                except requests.exceptions.RequestException as e: # error occured
+                    ok = False
+            
+                # ---
+                self._mutex.release()
+
+                if ok:
+                    self.registerSuccess()
+                    return True
+            else:
+                # ---
+                self._mutex.release()
+        return False
 
 # --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
