@@ -34,12 +34,12 @@ class PointCloudMsg(Message):
 class LocationMsg(Message):
     _url_dir = '/location'
     def __init__(self, readingDate:str = formatTime(datetime.now()),\
-        slamXCoordinte:float = None, slamYCoordinate:float = None,\
+        slamXCoordinate:float = None, slamYCoordinate:float = None,\
         slamRotation:float = None, realXCoordinate:float = None,\
         realYCoordinate:float = None):
 
         super().__init__(readingDate=readingDate)
-        self.slamXCoordinte = slamXCoordinte
+        self.slamXCoordinate = slamXCoordinate
         self.slamYCoordinate = slamYCoordinate
         self.slamRotation = slamRotation
         self.realXCoordinate = realXCoordinate
@@ -47,8 +47,8 @@ class LocationMsg(Message):
 
     def getMsg(self, vid:int) -> dict:
         msg = super().getMsg(vid)
-        if self.slamXCoordinte is not None:
-            msg['slamXCoordinate'] = self.slamXCoordinte
+        if self.slamXCoordinate is not None:
+            msg['slamXCoordinate'] = self.slamXCoordinate
         if self.slamYCoordinate is not None:
             msg['slamYCoordinate'] = self.slamYCoordinate
         if self.slamRotation is not None:
