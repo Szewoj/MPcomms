@@ -3,7 +3,7 @@
 # --- --- --- --- --- --- --- --- --- --- --- --- ---
 
 # Import used messages from messaging package:
-from RestAPI.messaging.Messages import formatTime, ImuReadingMsg, DiagnosticDataMsg
+from RestAPI.messaging.Messages import LidarReadingMsg, LocationMsg, PointCloudMsg, formatTime, ImuReadingMsg, DiagnosticDataMsg
 
 # Import enums used in state variables:
 from RestAPI.synchronized.SEmergencyAction import EmergencyActions
@@ -18,12 +18,16 @@ import RTMPVideo.streaming.VideoStreamer as VS
 # Video generator -- replace with camera capture
 import RTMPVideo.DummyCap as DCap, cv2
 
+# Readings generator -- replace with real readings
+from readings import ExampleReadings
+
 # Other imports:
 import time, random, threading
 from datetime import datetime
 
 def sendVideo():
-    cap = DCap.DummyCap()
+    #cap = DCap.DummyCap()
+    cap = cv2.VideoCapture("harry.avi")
 
     streamer_rgb = VS.VideoStreamer('rgb')
     streamer_gs = VS.VideoStreamer('gs')
@@ -53,15 +57,16 @@ if __name__ == "__main__":
 
     while True:
         try:
+            time.sleep(0.5)
             # --- --- --- --- --- --- ---
             # --- GENERAL OPERATIONS: ---
             # --- --- --- --- --- --- ---
 
             # example measurement:
-            m_battery = random.uniform(3.2, 4.2)
-            m_battery_time = datetime.now()
-
-            time.sleep(1)
+            m_lidar = ExampleReadings.LidarReadings.getNext()
+            m_location = ExampleReadings.LocationReadings.getNext()
+            m_pointCloud = ExampleReadings.PointCloudReading.getNext()
+            
 
             # --- --- --- --- --- --- ---
             
@@ -72,30 +77,25 @@ if __name__ == "__main__":
             if(restAP.isActive()): # <- Active state means that there is
                                    #    existing connection that waits for data
             
-                # send data with default time (time of creating the message)
-                # and all fields provided
-                restAP.send(
-                    ImuReadingMsg(
-                        accelerationX=1.7,
-                        accelerationY=1.8,
-                        accelerationZ=1.9,
-                        angularVelocityX=0.2,
-                        angularVelocityY=0.0,
-                        angularVelocityZ=0.0,
-                        magneticFieldX=0.0,
-                        magneticFieldY=0.0,
-                        magneticFieldZ=-9.98
-                    )
-                )
+                # send lidar measurement
+                restAP.send(LidarReadingMsg(
+                    lidarDistancesReading=m_lidar
+                ))
 
-                # send data with time of measurement, but only some fields
-                # check if succeded
-                f = restAP.send(
-                    DiagnosticDataMsg(
-                        readingDate=formatTime(m_battery_time),
-                        batteryChargeStatus=m_battery
-                    )
-                )
+                # send location measurement
+                restAP.send(LocationMsg(
+                    slamXCoordinate=m_location["slamXCoordinate"],
+                    slamYCoordinate=m_location["slamYCoordinate"],
+                    slamRotation=m_location["slamRotation"],
+                    realXCoordinate=m_location["realXCoordinate"],
+                    realYCoordinate=m_location["realYCoordinate"],
+                ))
+
+                # send point cloud reading
+                restAP.send(PointCloudMsg(
+                    pointCloudReading=m_pointCloud
+                ))
+
 
             # --- --- --- --- --- --- ---
 
