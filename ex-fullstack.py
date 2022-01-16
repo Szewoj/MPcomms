@@ -96,7 +96,6 @@ if __name__ == "__main__":
                         batteryChargeStatus=m_battery
                     )
                 )
-                print("Message send: " + str(f))
 
             # --- --- --- --- --- --- ---
 
@@ -108,13 +107,13 @@ if __name__ == "__main__":
             if(restAP.modeChanged()):
                 mode = restAP.pollMode() # <- poll resets _changed flag
                 # mode changed routine goes here:
-                print("Received new mode: " + str(mode))
+                print("[i] Received new mode: " + str(mode))
 
             # Emergency changed:
             if(restAP.emergencyActionChanged()):
                 ea = restAP.pollEmergencyAction() # <- poll resets _changed flag
                 # mode changed routine goes here:
-                print("Received new emergency action: " + str(ea))
+                print("[i] Received new emergency action: " + str(ea))
 
             # --- --- --- --- --- --- ---
 
