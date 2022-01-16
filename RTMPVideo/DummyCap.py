@@ -1,6 +1,5 @@
 import math, numpy as np, cv2
 
-
 class DummyCap(object):
     T_MAX = 300
     def __init__(self) -> None:
