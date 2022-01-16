@@ -70,6 +70,7 @@ class SConnection(object):
         self._port = port
         self._vehicleID = vid
         self._status = ConnectionStatus.CONNECTED_ACTIVE
+        print("[i] Connected to http://" + self._address + ":" + str(self._port) + " .")
         # ---
         self._mutex.release()
 
@@ -77,6 +78,7 @@ class SConnection(object):
         self._mutex.acquire()
         # ---
         self._status = ConnectionStatus.DISCONNECTED
+        print("[i] http://" + self._address + ":" + str(self._port) + " disconnected.")
         # ---
         self._mutex.release()
 
@@ -161,6 +163,7 @@ class SConnection(object):
         self._errorCounter += 1
         if self._errorCounter > SConnection._MAX_EC:
             self._status = ConnectionStatus.PENDING
+            print("[w] Lost connection!")
         # ---
         self._mutex.release()
 
@@ -180,7 +183,7 @@ class SConnection(object):
             # ---
             self._pendingCounter += 1
             if self._pendingCounter > SConnection._MAX_PND:
-                print("Trying to reconnect...")
+                print("[i] Trying to reconnect...")
                 self._pendingCounter = 0
                 url = self._address + str(self._port) + "/vehicle/" + str(self._vehicleID)
                 try:
@@ -194,6 +197,7 @@ class SConnection(object):
 
                 if ok:
                     self.registerSuccess()
+                    print("[i] Reconnected!")
                     return True
             else:
                 # ---
