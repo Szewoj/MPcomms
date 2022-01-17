@@ -18,9 +18,10 @@ class PointCloudReading:
     def getNext():
         return PointCloudReading._READINGS[0]
 
+
 class LocationReadings:
     _MAX_IDX = 10
-    _idx = random.randint(0, 10)
+    _idx = random.randint(0, 9)
 
     _READINGS = (
         {
@@ -100,3 +101,264 @@ class LocationReadings:
         if LocationReadings._idx >= LocationReadings._MAX_IDX:
             LocationReadings._idx -= LocationReadings._MAX_IDX
         return LocationReadings._READINGS[LocationReadings._idx]
+
+
+class ImuReading:
+    _MAX_IDX = 10
+    _idx = random.randint(0, 9)
+
+    _READINGS = (
+        {
+            "accelerationX": 0.009999999999999998,
+            "accelerationY": 9.5,
+            "accelerationZ": -9.81,
+            "angularVelocityX": 0,
+            "angularVelocityY": 0,
+            "angularVelocityZ": 0.005,
+            "magneticFieldX": 0.9999998750000026,
+            "magneticFieldY": 0.0004999999791666669,
+            "magneticFieldZ": 0
+        },
+        {
+            "accelerationX": 0.6440481757271377,
+            "accelerationY": 5.987369392383789,
+            "accelerationZ": -9.81,
+            "angularVelocityX": 0,
+            "angularVelocityY": 0,
+            "angularVelocityZ": 0.07710136510370116,
+            "magneticFieldX": 0.9990537020826922,
+            "magneticFieldY": 0.04349368178100419,
+            "magneticFieldZ": 0
+        },
+        {
+            "accelerationX": 1.5507541451030387,
+            "accelerationY": 3.773536025353076,
+            "accelerationZ": -9.81,
+            "angularVelocityX": 0,
+            "angularVelocityY": 0,
+            "angularVelocityZ": 0.12254320790064736,
+            "magneticFieldX": 0.9906072239023345,
+            "magneticFieldY": 0.136738172989514,
+            "magneticFieldZ": 0
+        },
+        {
+            "accelerationX": 2.323631427358352,
+            "accelerationY": 2.378268852553325,
+            "accelerationZ": -9.81,
+            "angularVelocityX": 0,
+            "angularVelocityY": 0,
+            "angularVelocityZ": 0.1511829025002212,
+            "magneticFieldX": 0.9656787078334639,
+            "magneticFieldY": 0.2597395488505584,
+            "magneticFieldZ": 0
+        },
+        {
+            "accelerationX": 2.8907463206447486,
+            "accelerationY": 1.4989025404881566,
+            "accelerationZ": -9.81,
+            "angularVelocityX": 0,
+            "angularVelocityY": 0,
+            "angularVelocityZ": 0.1692330531162957,
+            "magneticFieldX": 0.917734705929781,
+            "magneticFieldY": 0.3971939193038816,
+            "magneticFieldZ": 0
+        },
+        {
+            "accelerationX": 3.2799510434999664,
+            "accelerationY": 0.9446824413773776,
+            "accelerationZ": -9.81,
+            "angularVelocityX": 0,
+            "angularVelocityY": 0,
+            "angularVelocityZ": 0.18060914988751695,
+            "magneticFieldX": 0.8436006018671552,
+            "magneticFieldY": 0.5369711580051328,
+            "magneticFieldZ": 0
+        },
+        {
+            "accelerationX": 3.5378709173319782,
+            "accelerationY": 0.5953855510552977,
+            "accelerationZ": -9.81,
+            "angularVelocityX": 0,
+            "angularVelocityY": 0,
+            "angularVelocityZ": 0.18777892816254915,
+            "magneticFieldX": 0.7430231982787926,
+            "magneticFieldY": 0.6692656623640227,
+            "magneticFieldZ": 0
+        },
+        {
+            "accelerationX": 3.719899642290478,
+            "accelerationY": 0.35647932250560466,
+            "accelerationZ": -9.81,
+            "angularVelocityX": 0,
+            "angularVelocityY": 0,
+            "angularVelocityZ": 0.1926827928538323,
+            "magneticFieldX": 0.6027105615697972,
+            "magneticFieldY": 0.797959885565822,
+            "magneticFieldZ": 0
+        },
+        {
+            "accelerationX": 3.8222823741487697,
+            "accelerationY": 0.22467088258818535,
+            "accelerationZ": -9.81,
+            "angularVelocityX": 0,
+            "angularVelocityY": 0,
+            "angularVelocityZ": 0.19538833451529508,
+            "magneticFieldX": 0.4546989418141456,
+            "magneticFieldY": 0.8906452000168733,
+            "magneticFieldZ": 0
+        },
+        {
+            "accelerationX": 3.8875230546664206,
+            "accelerationY": 0.14159869113350965,
+            "accelerationZ": -9.81,
+            "angularVelocityX": 0,
+            "angularVelocityY": 0,
+            "angularVelocityZ": 0.19709350055041738,
+            "magneticFieldX": 0.29100198179325676,
+            "magneticFieldY": 0.9567224501350415,
+            "magneticFieldZ": 0
+        }
+    )
+
+    def getNext():
+        ImuReading._idx += 1
+        if ImuReading._idx >= ImuReading._MAX_IDX:
+            ImuReading._idx -= ImuReading._MAX_IDX
+        return ImuReading._READINGS[ImuReading._idx]
+
+
+class EncoderReading:
+    _MAX_IDX = 10
+    _idx = random.randint(0, 9)
+
+    _READINGS = (
+        {
+            "leftFrontWheelSpeed": 4.91127171875,
+            "rightFrontWheelSpeed": 4.91127171875,
+            "leftRearWheelSpeed": 4.91127171875,
+            "rightRearWheelSpeed": 4.91127171875
+        },
+        {
+            "leftFrontWheelSpeed": 10.49033790724717,
+            "rightFrontWheelSpeed": 10.49033790724717,
+            "leftRearWheelSpeed": 10.49033790724717,
+            "rightRearWheelSpeed": 10.49033790724717
+        },
+        {
+            "leftFrontWheelSpeed": 14.006541079362036,
+            "rightFrontWheelSpeed": 14.006541079362036,
+            "leftRearWheelSpeed": 14.006541079362036,
+            "rightRearWheelSpeed": 14.006541079362036
+        },
+        {
+            "leftFrontWheelSpeed": 16.22262605305923,
+            "rightFrontWheelSpeed": 16.22262605305923,
+            "leftRearWheelSpeed": 16.22262605305923,
+            "rightRearWheelSpeed": 16.22262605305923
+        },
+        {
+            "leftFrontWheelSpeed": 17.73834668464989,
+            "rightFrontWheelSpeed": 17.73834668464989,
+            "leftRearWheelSpeed": 17.73834668464989,
+            "rightRearWheelSpeed": 17.73834668464989
+        },
+        {
+            "leftFrontWheelSpeed": 18.574594332998885,
+            "rightFrontWheelSpeed": 18.574594332998885,
+            "leftRearWheelSpeed": 18.574594332998885,
+            "rightRearWheelSpeed": 18.574594332998885
+        },
+        {
+            "leftFrontWheelSpeed": 19.10163891975443,
+            "rightFrontWheelSpeed": 19.10163891975443,
+            "leftRearWheelSpeed": 19.10163891975443,
+            "rightRearWheelSpeed": 19.10163891975443
+        },
+        {
+            "leftFrontWheelSpeed": 19.43380845945567,
+            "rightFrontWheelSpeed": 19.43380845945567,
+            "leftRearWheelSpeed": 19.43380845945567,
+            "rightRearWheelSpeed": 19.43380845945567
+        },
+        {
+            "leftFrontWheelSpeed": 19.64315811578087,
+            "rightFrontWheelSpeed": 19.64315811578087,
+            "leftRearWheelSpeed": 19.64315811578087,
+            "rightRearWheelSpeed": 19.64315811578087
+        },
+        {
+            "leftFrontWheelSpeed": 19.775100613105877,
+            "rightFrontWheelSpeed": 19.775100613105877,
+            "leftRearWheelSpeed": 19.775100613105877,
+            "rightRearWheelSpeed": 19.775100613105877
+        }
+    )
+
+    def getNext():
+        EncoderReading._idx += 1
+        if EncoderReading._idx >= EncoderReading._MAX_IDX:
+            EncoderReading._idx -= EncoderReading._MAX_IDX
+        return EncoderReading._READINGS[EncoderReading._idx]
+
+class DiagnosticReading:
+    _MAX_IDX = 10
+    _idx = random.randint(0, 9)
+
+    _READINGS = (
+        {
+            "wheelsTurnMeasure": 0.7853982,
+            "cameraTurnAngle": 0,
+            "batteryChargeStatus": 0.98358804
+        },
+        {
+            "wheelsTurnMeasure": 0.7853982,
+            "cameraTurnAngle": 0,
+            "batteryChargeStatus": 0.91685617
+        },
+        {
+            "wheelsTurnMeasure": 0.7853982,
+            "cameraTurnAngle": 0,
+            "batteryChargeStatus": 0.8306505
+        },
+        {
+            "wheelsTurnMeasure": 0.7853982,
+            "cameraTurnAngle": 0,
+            "batteryChargeStatus": 0.74528414
+        },
+        {
+            "wheelsTurnMeasure": 0.7853982,
+            "cameraTurnAngle": 0,
+            "batteryChargeStatus": 0.660951
+        },
+        {
+            "wheelsTurnMeasure": 0.7853982,
+            "cameraTurnAngle": 0,
+            "batteryChargeStatus": 0.59627354
+        },
+        {
+            "wheelsTurnMeasure": 0.7853982,
+            "cameraTurnAngle": 0,
+            "batteryChargeStatus": 0.54139835
+        },
+        {
+            "wheelsTurnMeasure": 0.7853982,
+            "cameraTurnAngle": 0,
+            "batteryChargeStatus": 0.4948639
+        },
+        {
+            "wheelsTurnMeasure": 0.7853982,
+            "cameraTurnAngle": 0,
+            "batteryChargeStatus": 0.45521173
+        },
+        {
+            "wheelsTurnMeasure": 0.7853982,
+            "cameraTurnAngle": 0,
+            "batteryChargeStatus": 0.42118153
+        }
+    )
+
+    def getNext():
+        DiagnosticReading._idx += 1
+        if DiagnosticReading._idx >= DiagnosticReading._MAX_IDX:
+            DiagnosticReading._idx -= DiagnosticReading._MAX_IDX
+        return DiagnosticReading._READINGS[DiagnosticReading._idx]

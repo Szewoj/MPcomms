@@ -3,7 +3,7 @@
 # --- --- --- --- --- --- --- --- --- --- --- --- ---
 
 # Import used messages from messaging package:
-from RestAPI.messaging.Messages import LidarReadingMsg, LocationMsg, PointCloudMsg, formatTime, ImuReadingMsg, DiagnosticDataMsg
+from RestAPI.messaging.Messages import EncoderReadingMsg, LidarReadingMsg, LocationMsg, PointCloudMsg, formatTime, ImuReadingMsg, DiagnosticDataMsg
 
 # Import enums used in state variables:
 from RestAPI.synchronized.SEmergencyAction import EmergencyActions
@@ -26,8 +26,8 @@ import time, random, threading
 from datetime import datetime
 
 def sendVideo():
-    #cap = DCap.DummyCap()
-    cap = cv2.VideoCapture("harry.avi")
+    cap = DCap.DummyCap()
+    #cap = cv2.VideoCapture("harry.avi")
 
     streamer_rgb = VS.VideoStreamer('rgb')
     streamer_gs = VS.VideoStreamer('gs')
@@ -66,7 +66,9 @@ if __name__ == "__main__":
             m_lidar = ExampleReadings.LidarReadings.getNext()
             m_location = ExampleReadings.LocationReadings.getNext()
             m_pointCloud = ExampleReadings.PointCloudReading.getNext()
-            
+            m_imu = ExampleReadings.ImuReading.getNext()
+            m_encoder = ExampleReadings.EncoderReading.getNext()
+            m_diag = ExampleReadings.DiagnosticReading.getNext()
 
             # --- --- --- --- --- --- ---
             
@@ -96,6 +98,33 @@ if __name__ == "__main__":
                     pointCloudReading=m_pointCloud
                 ))
 
+                # send imu reading
+                restAP.send(ImuReadingMsg(
+                    accelerationX=m_imu["accelerationX"],
+                    accelerationY=m_imu["accelerationY"],
+                    accelerationZ=m_imu["accelerationZ"],
+                    angularVelocityX=m_imu["angularVelocityX"],
+                    angularVelocityY=m_imu["angularVelocityY"],
+                    angularVelocityZ=m_imu["angularVelocityZ"],
+                    magneticFieldX=m_imu["magneticFieldX"],
+                    magneticFieldY=m_imu["magneticFieldY"],
+                    magneticFieldZ=m_imu["magneticFieldZ"]
+                ))
+
+                # send encoder reading
+                restAP.send(EncoderReadingMsg(
+                    leftFrontWheelSpeed=m_encoder["leftFrontWheelSpeed"],
+                    rightFrontWheelSpeed=m_encoder["rightFrontWheelSpeed"],
+                    leftRearWheelSpeed=m_encoder["leftRearWheelSpeed"],
+                    rightRearWheelSpeed=m_encoder["rightRearWheelSpeed"]
+                ))
+
+                # send 
+                restAP.send(DiagnosticDataMsg(
+                    wheelsTurnMeasure=m_diag["wheelsTurnMeasure"],
+                    cameraTurnAngle=m_diag["cameraTurnAngle"],
+                    batteryChargeStatus=m_diag["batteryChargeStatus"]
+                ))
 
             # --- --- --- --- --- --- ---
 
