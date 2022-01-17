@@ -27,7 +27,7 @@ from datetime import datetime
 
 def sendVideo():
     #cap = DCap.DummyCap()
-    cap = cv2.VideoCapture("harry.avi")
+    cap = cv2.VideoCapture("../harry.avi")
 
     streamer_rgb = VS.VideoStreamer('rgb')
     streamer_gs = VS.VideoStreamer('gs')
