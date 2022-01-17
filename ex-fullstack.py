@@ -26,8 +26,8 @@ import time, random, threading
 from datetime import datetime
 
 def sendVideo():
-    cap = DCap.DummyCap()
-    #cap = cv2.VideoCapture("harry.avi")
+    #cap = DCap.DummyCap()
+    cap = cv2.VideoCapture("harry.avi")
 
     streamer_rgb = VS.VideoStreamer('rgb')
     streamer_gs = VS.VideoStreamer('gs')
@@ -45,7 +45,7 @@ def sendVideo():
 
 if __name__ == "__main__":
     # Start streamer as daemon:
-    stream_thread = threading.Thread()
+    stream_thread = threading.Thread(target=sendVideo)
     stream_thread.daemon = True
     stream_thread.start()
 
@@ -62,7 +62,7 @@ if __name__ == "__main__":
             # --- GENERAL OPERATIONS: ---
             # --- --- --- --- --- --- ---
 
-            # example measurement:
+            # example measurements:
             m_lidar = ExampleReadings.LidarReadings.getNext()
             m_location = ExampleReadings.LocationReadings.getNext()
             m_pointCloud = ExampleReadings.PointCloudReading.getNext()
