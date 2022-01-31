@@ -62,4 +62,9 @@ $ ./MPcomms/stop_nginx.sh
   $ pip3 install flask-restx
   ```
 
+* **[Waitress](https://docs.pylonsproject.org/projects/waitress/)**
 
+  *Installation*:
+  ```
+  $ pip3 install waitress
+  ```
