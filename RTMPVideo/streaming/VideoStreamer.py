@@ -54,6 +54,7 @@ class VideoStreamer:
                     loglevel="panic")
                 )
             self.process = ffmpeg.run_async(self.stream, pipe_stdin=True)
+            self._running = True
 # ---
     def publishFrame(self, frame) -> None:
         ret, f_encoded = cv2.imencode('.bmp', frame)
@@ -64,6 +65,8 @@ class VideoStreamer:
         self.process.stdin.write(bytes)
 # ---
     def close(self):
-        self.process.stdin.close()
-        self.process.terminate()
+        if self._running:
+            self.process.stdin.close()
+            self.process.terminate()
+            self._running = False
 # --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
